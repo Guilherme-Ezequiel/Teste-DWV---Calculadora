@@ -2,7 +2,7 @@ defmodule Calculadora.Investimento.Calculos do
   alias Calculadora.Investimento
 
   def analisar(%Investimento{} = inv) do
-    # --- 1. Extrair custos fixos ---
+    # --- Extrair custos fixos ---
     custo_fixos_totais =
       inv.custos_fixos_mensais
       |> Map.from_struct()
@@ -10,7 +10,7 @@ defmodule Calculadora.Investimento.Calculos do
       |> Enum.map(&(&1 || 0))
       |> Enum.sum()
 
-    # --- 2. Valor financiado e parcelas (Price) ---
+    # --- Valor financiado e parcelas (Price) ---
     valor_financiado = inv.valor_imovel - inv.entrada
     taxa_mensal = inv.taxa_juros_anual / 100 / 12
     n = inv.prazo_financiamento_meses
@@ -23,20 +23,20 @@ defmodule Calculadora.Investimento.Calculos do
         valor_financiado / n
       end
 
-    # --- 3. Receita líquida mensal considerando vacância ---
+    # --- Receita líquida mensal considerando vacância ---
     receita_liquida_mensal =
       inv.aluguel_mensal_esperado * (1 - inv.taxa_vacancia_anual / 100) - custo_fixos_totais
 
-    # --- 4. Fluxo de caixa mensal ---
+    # --- Fluxo de caixa mensal ---
     fluxo_caixa_mensal = receita_liquida_mensal - parcela_mensal
 
-    # --- 5. Métricas anuais ---
+    # --- Métricas anuais ---
     receita_liquida_anual = receita_liquida_mensal * 12
     yield_bruto_anual = inv.aluguel_mensal_esperado * 12 / inv.valor_imovel * 100
     yield_liquido_anual = receita_liquida_anual / inv.valor_imovel * 100
     cap_rate = receita_liquida_anual / inv.valor_imovel * 100
 
-    # --- 6. ROI 5 anos ---
+    # --- ROI 5 anos ---
     fluxo_caixa_acumulado_5_anos = fluxo_caixa_mensal * 12 * 5
 
     valorizacao_total =
@@ -45,7 +45,7 @@ defmodule Calculadora.Investimento.Calculos do
     roi_5_anos =
       (fluxo_caixa_acumulado_5_anos + valorizacao_total - inv.entrada) / inv.entrada * 100
 
-    # --- 7. Payback ---
+    # --- Payback ---
     payback_anos =
       if fluxo_caixa_mensal > 0 do
         inv.entrada / (fluxo_caixa_mensal * 12)
@@ -53,7 +53,7 @@ defmodule Calculadora.Investimento.Calculos do
         :infinity
       end
 
-    # --- 8. Viabilidade ---
+    # --- Viabilidade ---
     viabilidade =
       cond do
         yield_liquido_anual > 6 and fluxo_caixa_mensal > 0 ->
@@ -67,7 +67,7 @@ defmodule Calculadora.Investimento.Calculos do
           "BAIXA"
       end
 
-    # --- 9. Pontos de atenção ---
+    # --- Pontos de atenção ---
     pontos_atencao = []
 
     pontos_atencao =
