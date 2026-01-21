@@ -33,9 +33,10 @@ No termial, digite:
 
    http://localhost:4000
 
-Endpoint
---------
-POST /api/analise-investimento
+4. No postman, crie a seguinte requisição:
+
+POST 
+http://localhost:4000/api/analise-investimento
 
 Content-Type: application/json
 
